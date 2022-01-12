@@ -1,4 +1,4 @@
-**CPE Retriever script v1.0 - by Théo Thévenin**
+**CPE Retriever script v1.0 - by rammam**
 
 **Usage : python3 cpe_retriever.py <INPUT.txt>**
 
