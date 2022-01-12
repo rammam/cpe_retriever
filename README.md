@@ -1,15 +1,6 @@
 **CPE Retriever script v1.0 - by Théo Thévenin**
 
-
-
 **Usage : python3 cpe_retriever.py <INPUT.txt>**
-
-Recommended formatting for the input file :
-
-**line 1>GNU Bash 4.3.10
-line 2>libarchive 3.3.1**
-
-etc..
 
 --------------------------------------------------------------------
 
