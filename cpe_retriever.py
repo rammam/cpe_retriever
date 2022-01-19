@@ -14,10 +14,7 @@ async def get_cpes(session, url):
 		
 		try:
 			print(cpe["result"]["cpes"][0]["cpe23Uri"])
-		except:
-			pass
-		try:	
-    			f.write(cpe["result"]["cpes"][0]["cpe23Uri"]+",")
+			f.write(cpe["result"]["cpes"][0]["cpe23Uri"]+",")
 		except:
 			pass
 	f.close()
