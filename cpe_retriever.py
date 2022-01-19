@@ -1,5 +1,5 @@
 #/usr/bin/python
-#CPE Retriever v1.1 - by rammam
+#CPE Retriever v1.1 - by Theo Thevenin
 
 import sys
 import requests
@@ -9,9 +9,8 @@ import aiohttp
 async def get_cpes(session, url):
 	f = open("cots_list.csv", "a")
 	async with session.get(url) as resp:
-		cpe = await resp.json(content_type="application/json")
+		cpe = await resp.json()
 		i = cpe["result"].keys()
-		
 		try:
 			print(cpe["result"]["cpes"][0]["cpe23Uri"])
 			f.write(cpe["result"]["cpes"][0]["cpe23Uri"]+",")
@@ -26,13 +25,13 @@ async def main():
 	if len(sys.argv) == 3:
 		if len(sys.argv[2]) == 36:
 			api=sys.argv[2]
-			base_url = f"https://services.nvd.nist.gov/rest/json/cpes/1.0?apiKey={api}&keyword="
+			base_url = f"https://services.nvd.nist.gov/rest/json/cpes/1.0?resultsPerPage=1&apiKey={api}&keyword="
 		else:
 			raise Exception("Please enter a valid NVD API key.")
 	else:
-		base_url = "https://services.nvd.nist.gov/rest/json/cpes/1.0?keyword="
-	list = open(sys.argv[1], "r")
-	async with aiohttp.ClientSession() as session:
+		base_url = "https://services.nvd.nist.gov/rest/json/cpes/1.0?resultsPerPage=1&keyword="
+	list = open(sys.argv[1], "r", errors="ignore")
+	async with aiohttp.ClientSession(trust_env=True) as session:
 		tasks = []
 		for line in list:
 			keywords = line
@@ -40,5 +39,8 @@ async def main():
 			tasks.append(asyncio.ensure_future(get_cpes(session, url)))
 		cpe_list = await asyncio.gather(*tasks)
 	list.close
-	
+
+if (sys.platform.startswith('win')):
+	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    
 asyncio.run(main())
