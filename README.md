@@ -13,7 +13,7 @@ etc..
 
 **Changes :**
 
-v1.1 : Added asynchronous API requests, API key support, bug fixes
+v1.1 : Added asynchronous API requests, API key support, and Windows support
 
 v1.0 : Initial version
 
