@@ -1,47 +1,47 @@
 #/usr/bin/python
+#CPE Retriever v1.1 - by rammam
 
 import sys
 import requests
+import asyncio
+import aiohttp
 
-if len(sys.argv) != 2:
-    raise Exception("Please specify the COTS input file. Usage : python3 cpe_retriever.py <INPUT.TXT>")
-
-if sys.argv[1] != "*.txt":
-    raise Exception("The COTS input file must be in TXT format. Usage : python3 cpe_retriever.py <INPUT.TXT>")
-
-
-progress=0
-lines=0
-
-list = open(sys.argv[1], "r")
-
-for line in open("cots_list.txt").readlines():
-    lines += 1
-    
-f = open("cots_list.csv", "a")
-
-for line in list:
-
-    keywords = line
-    raw = requests.get('https://services.nvd.nist.gov/rest/json/cpes/1.0?keyword='+keywords).json()
-    i = raw["result"].keys()
-    
-    try:    
-        print(raw["result"]["cpes"][0]["cpe23Uri"])
-        
-    except:    
-        print("No valid CPE Found.")
-        
-    progress += 1
-    sys.stdout.write('\r')
-    sys.stdout.write(str(progress)+"/"+str(lines)+" ")
-    sys.stdout.flush()
-    
-    try:    
-        f.write(raw["result"]["cpes"][0]["cpe23Uri"]+",")
-        
-    except:    
-        pass
-        
-list.close
-f.close()
+async def get_cpes(session, url):
+	f = open("cots_list.csv", "a")
+	async with session.get(url) as resp:
+		cpe = await resp.json(content_type="application/json")
+		i = cpe["result"].keys()
+		
+		try:
+			print(cpe["result"]["cpes"][0]["cpe23Uri"])
+		except:
+			pass
+		try:	
+    			f.write(cpe["result"]["cpes"][0]["cpe23Uri"]+",")
+		except:
+			pass
+	f.close()
+		
+async def main():
+	if len(sys.argv) < 2 or len(sys.argv) > 3:
+		raise Exception("Please specify the COTS input file and your NVD API key (optional). Usage : python3 cpe_retriever.py <INPUT.TXT> [apiKey]")
+		
+	if len(sys.argv) == 3:
+		if len(sys.argv[2]) == 36:
+			api=sys.argv[2]
+			base_url = f"https://services.nvd.nist.gov/rest/json/cpes/1.0?apiKey={api}&keyword="
+		else:
+			raise Exception("Please enter a valid NVD API key.")
+	else:
+		base_url = "https://services.nvd.nist.gov/rest/json/cpes/1.0?keyword="
+	list = open(sys.argv[1], "r")
+	async with aiohttp.ClientSession() as session:
+		tasks = []
+		for line in list:
+			keywords = line
+			url = base_url+keywords
+			tasks.append(asyncio.ensure_future(get_cpes(session, url)))
+		cpe_list = await asyncio.gather(*tasks)
+	list.close
+	
+asyncio.run(main())
