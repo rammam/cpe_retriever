@@ -1,4 +1,4 @@
-# CPE Retriever script v1.1 - by rammam
+# CPE Retriever script v1.1.1 - by rammam
 
 _Usage : python3 cpe_retriever.py <INPUT.txt> [apiKey]_
 
@@ -29,6 +29,7 @@ Then, the script puts the CPE URIs in a csv output file.
 The request rate is about 10/min, and can be increased to 100/min with a NIST API key (obtainable on the NIST's website). 
 
 ## Changes :
+v1.1.1 : Added parallel request limiter.
 
 v1.1 : Added asynchronous API requests, API key support, and Windows support.
 
