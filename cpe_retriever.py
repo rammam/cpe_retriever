@@ -31,7 +31,8 @@ async def main():
 	else:
 		base_url = "https://services.nvd.nist.gov/rest/json/cpes/1.0?resultsPerPage=1&keyword="
 	list = open(sys.argv[1], "r", errors="ignore")
-	async with aiohttp.ClientSession(trust_env=True) as session:
+	connector = aiohttp.TCPConnector(limit=20)
+	async with aiohttp.ClientSession(trust_env=True, connector=connector) as session:
 		tasks = []
 		for line in list:
 			keywords = line
