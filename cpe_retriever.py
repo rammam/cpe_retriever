@@ -1,4 +1,4 @@
-#/usr/bin/python
+#!/usr/bin/python
 #CPE Retriever v1.1 - by rammmam
 
 import sys
